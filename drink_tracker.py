@@ -70,14 +70,21 @@ def handler(event, context):
     received_message = event["Body"]
     sender = event["From"]
 
-    digit_match = re.search(r"^(\d+)", received_message)
+    digit_match = re.search(r"(\d+)(\.\d+)?", received_message)
     if received_message == "%3F" or received_message == "%3F+":  # AKA "?"
         return build_response(calculate_drinks(sender))
     elif digit_match:
-        return build_response(add_drinks(sender, int(digit_match.group(1))))
+        return build_response(
+            add_drinks(
+                sender,
+                Decimal(
+                    f"{digit_match.group(1)}{digit_match.group(2) if digit_match.group(2) else ''}"
+                ),
+            )
+        )
     elif re.search(r"howdy", received_message.lower()):
         return build_response("https://www.youtube.com/watch?v=VGF4ibgcHQE")
 
     return build_response(
-        'Command not recognized, "[0-9]+" (regex notation) to add drinks or "?" to check how many you\'ve had'
+        'Command not recognized, input a decimal number (e.g. "0.5", "1", "1.5") to add drinks or "?" to check how many you\'ve had'
     )
