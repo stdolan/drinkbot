@@ -72,11 +72,11 @@ def handler(event, context):
 
     if received_message == "%3F":  # AKA "?"
         return build_response(calculate_drinks(sender))
-    elif re.search(r"\d+", received_message):
+    elif re.search(r"^\d+$", received_message):
         return build_response(add_drinks(sender, int(received_message)))
     elif re.search(r"howdy", received_message.lower()):
         return build_response("https://www.youtube.com/watch?v=VGF4ibgcHQE")
 
     return build_response(
-        'Command not recognized, "[0-9]+" to add drinks or "?" to check how many you\'ve had'
+        'Command not recognized, "[0-9]" to add drinks or "?" to check how many you\'ve had'
     )
