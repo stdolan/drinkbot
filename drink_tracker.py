@@ -47,7 +47,7 @@ def calculate_drinks(user):
     current_drinks -= delta_drinks
     if current_drinks < Decimal(0):
         current_drinks = 0
-    return f"You have {current_drinks} drink(s) in you"
+    return f"You have {round(current_drinks, 1)} drink(s) in you"
 
 
 def add_drinks(user, drinks):
