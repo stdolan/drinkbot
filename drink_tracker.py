@@ -77,7 +77,7 @@ def handler(event, context):
         return build_response(response_text=calculate_drinks(sender))
 
     trump_match = re.search("trump", received_message.lower())
-    digit_match = re.search(r"(\d+\.)?(\d+)", received_message)
+    digit_match = re.search(r"(\d+)(\.\d+)?", received_message)
     if trump_match:
         return build_response(
             response_media=[
@@ -89,7 +89,7 @@ def handler(event, context):
             response_text=add_drinks(
                 sender,
                 Decimal(
-                    f"{digit_match.group(1) if digit_match.group(1) else ''}{digit_match.group(2)}"
+                    f"{digit_match.group(1)}{digit_match.group(2) if digit_match.group(2) else ''}"
                 ),
             )
         )
