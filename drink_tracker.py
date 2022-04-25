@@ -11,11 +11,14 @@ DRINKS_PER_HOUR = 1.0
 DRINKS_PER_SECOND = (DRINKS_PER_HOUR / 60.0) / 60.0
 
 
-def build_response(response_text):
+def build_response(*, response_text="", response_media=[]):
     response = ElementTree.Element("Response")
     message = ElementTree.SubElement(response, "Message")
     body = ElementTree.SubElement(message, "Body")
     body.text = response_text
+    for media in response_media:
+        media_tag = ElementTree.SubElement(message, "Media")
+        media_tag.text = media
     return ElementTree.tostring(
         response, xml_declaration=True, encoding="UTF-8"
     )
@@ -70,12 +73,20 @@ def handler(event, context):
     received_message = event["Body"]
     sender = event["From"]
 
-    digit_match = re.search(r"(\d+)(\.\d+)?", received_message)
     if received_message == "%3F" or received_message == "%3F+":  # AKA "?"
-        return build_response(calculate_drinks(sender))
+        return build_response(response_text=calculate_drinks(sender))
+
+    trump_match = re.search("trump", received_message.lower())
+    digit_match = re.search(r"(\d+)(\.\d+)?", received_message)
+    if trump_match:
+        return build_response(
+            response_media=[
+                "https://drink-bot.s3.us-west-2.amazonaws.com/trump.jpg"
+            ]
+        )
     elif digit_match:
         return build_response(
-            add_drinks(
+            response_text=add_drinks(
                 sender,
                 Decimal(
                     f"{digit_match.group(1)}{digit_match.group(2) if digit_match.group(2) else ''}"
